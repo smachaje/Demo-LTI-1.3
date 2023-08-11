@@ -22,15 +22,15 @@ if ($launch->is_deep_link_launch()) {
     <div class="dl-config">
         <h1>Pick a Difficulty</h1>
         <ul>
-            <li><a href="<?= TOOL_HOST ?>/configure.php?diff=easy&launch_id=<?= $launch->get_launch_id(); ?>">Easy</a></li>
-            <li><a href="<?= TOOL_HOST ?>/configure.php?diff=normal&launch_id=<?= $launch->get_launch_id(); ?>">Normal</a></li>
-            <li><a href="<?= TOOL_HOST ?>/configure.php?diff=hard&launch_id=<?= $launch->get_launch_id(); ?>">Hard</a></li>
+            <li><a href="<?= TOOL_HOST ?>/kshah220su/lti_try/lti-1-3-php-example-tool/src/web/configure.php?diff=easy&launch_id=<?= $launch->get_launch_id(); ?>">Easy</a></li>
+            <li><a href="<?= TOOL_HOST ?>/kshah220su/lti_try/lti-1-3-php-example-tool/src/web//configure.php?diff=normal&launch_id=<?= $launch->get_launch_id(); ?>">Normal</a></li>
+            <li><a href="<?= TOOL_HOST ?>/kshah220su/lti_try/lti-1-3-php-example-tool/src/web//configure.php?diff=hard&launch_id=<?= $launch->get_launch_id(); ?>">Hard</a></li>
         </ul>
     </div>
     <?php
     die;
 }
-?>
+?> 
 
 
 <div id="game-screen">

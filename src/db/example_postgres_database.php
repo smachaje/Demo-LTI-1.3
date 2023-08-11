@@ -4,95 +4,46 @@ define("TOOL_HOST", ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?: $_SERVER['REQUEST_SCH
 session_start();
 use \IMSGlobal\LTI;
 
+$_SESSION['iss'] = [];
+$reg_configs = array_diff(scandir(__DIR__ . '/configs'), array('..', '.', '.DS_Store'));
+foreach ($reg_configs as $key => $reg_config) {
+    $_SESSION['iss'] = array_merge($_SESSION['iss'], json_decode(file_get_contents(__DIR__ . "/configs/$reg_config"), true));
+}
 class Example_Database implements LTI\Database {
 
-    private $dbconn;
-
-    public function __construct() {
-        $this->dbconn = pg_connect("host=db dbname=postgres user=postgres password=postgres");
-    }
-
-    public function find_registration_by_issuer($iss) {
-
-        $result = pg_query_params(
-            $this->dbconn,
-            'SELECT * FROM lti_registration WHERE issuer = $1 LIMIT 1',
-            [$iss]
-        );
-
-        if (!$result) {
+   public function find_registration_by_issuer($iss) {
+        if (empty($_SESSION['iss']) || empty($_SESSION['iss'][$iss])) {
             return false;
         }
-
-        $registration = pg_fetch_assoc($result);
-
-        if (empty($registration)) {
-            return false;
-        }
-
-        $key_result = pg_query_params(
-            $this->dbconn,
-            'SELECT * FROM lti_key WHERE key_set_id = $1 LIMIT 1',
-            [$registration['key_set_id']]
-        );
-
-        if (!$key_result) {
-            return false;
-        }
-
-        $key = pg_fetch_assoc($key_result);
-
-        if (empty($key_result)) {
-            return false;
-        }
-
         return LTI\LTI_Registration::new()
-            ->set_issuer($registration['issuer'])
-            ->set_client_id($registration['client_id'])
-            ->set_auth_login_url($registration['platform_login_auth_endpoint'])
-            ->set_auth_token_url($registration['platform_service_auth_endpoint'])
-            ->set_key_set_url($registration['platform_jwks_endpoint'])
-            ->set_auth_server($registration['platform_auth_provider'])
-            ->set_kid($key['id'])
-            ->set_tool_private_key($key['private_key']);
+            ->set_auth_login_url($_SESSION['iss'][$iss]['auth_login_url'])
+            ->set_auth_token_url($_SESSION['iss'][$iss]['auth_token_url'])
+            ->set_auth_server($_SESSION['iss'][$iss]['auth_server'])
+            ->set_client_id($_SESSION['iss'][$iss]['client_id'])
+            ->set_key_set_url($_SESSION['iss'][$iss]['key_set_url'])
+            ->set_kid($_SESSION['iss'][$iss]['kid'])
+            ->set_issuer($iss)
+            ->set_tool_private_key($this->private_key($iss));
+            // ->set_auth_login_url($_SESSION['iss'][$iss]['auth_login_url'])
+            // ->set_auth_token_url($_SESSION['iss'][$iss]['auth_token_url'])
+            // ->set_auth_server($_SESSION['iss'][$iss]['auth_server'])
+            // ->set_client_id($_SESSION['iss'][$iss]['client_id'])
+            // ->set_key_set_url($_SESSION['iss'][$iss]['key_set_url'])
+            // ->set_kid($_SESSION['iss'][$iss]['kid'])
+            // ->set_issuer($iss)
+            // ->set_tool_private_key($this->private_key($iss));
     }
 
     public function find_deployment($iss, $deployment_id) {
-        $result = pg_query_params(
-            $this->dbconn,
-            'SELECT d.deployment_id FROM lti_deployment d JOIN lti_registration r ON (d.registration_id = r.id) WHERE r.issuer = $1 AND d.deployment_id = $2',
-            [$iss, $deployment_id]
-        );
-
-        if (!$result) {
-            return false;
-        }
-
-        $deployment = pg_fetch_assoc($result);
-
-        if (empty($deployment)) {
+        if (!in_array($deployment_id, $_SESSION['iss'][$iss]['deployment'])) {
             return false;
         }
         return LTI\LTI_Deployment::new()
-            ->set_deployment_id($deployment['deployment_id']);
+            ->set_deployment_id($deployment_id);
     }
 
-    public function get_keys_in_set($key_set_id) {
-        $key_result = pg_query_params(
-            $this->dbconn,
-            'SELECT * FROM lti_key WHERE key_set_id = $1',
-            [$key_set_id]
-        );
-
-        if (!$key_result) {
-            return [];
-        }
-
-        $keys = [];
-        while($key = pg_fetch_assoc($key_result)) {
-            $keys[$key['id']] = $key['private_key'];
-        }
-        return $keys;
+    private function private_key($iss) {
+        return file_get_contents(__DIR__ . $_SESSION['iss'][$iss]['private_key_file']);
     }
 }
 ?>
