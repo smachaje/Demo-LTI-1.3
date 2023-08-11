@@ -1,7 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../../vendor/autoload.php';
-require_once __DIR__ . '/../../db/example_database.php';
+require_once __DIR__ . '/../../db/example_postgres_database.php';
 
 use \Firebase\JWT\JWT;
 $message_jwt = [
@@ -14,7 +14,7 @@ $message_jwt = [
     "https://purl.imsglobal.org/spec/lti/claim/deployment_id" => '8c49a5fa-f955-405e-865f-3d7e959e809f',
     "https://purl.imsglobal.org/spec/lti/claim/message_type" => "LtiResourceLinkRequest",
     "https://purl.imsglobal.org/spec/lti/claim/version" => "1.3.0",
-    "https://purl.imsglobal.org/spec/lti/claim/target_link_uri" => TOOL_HOST . "/game.php",
+    "https://purl.imsglobal.org/spec/lti/claim/target_link_uri" => TOOL_HOST . "/kshah220su/lti_try/lti-1-3-php-example-tool/src/web/game.php",
     "https://purl.imsglobal.org/spec/lti/claim/roles" => [
         "http://purl.imsglobal.org/vocab/lis/v2/membership#Instructor"
     ],
