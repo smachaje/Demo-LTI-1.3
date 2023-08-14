@@ -11,11 +11,13 @@ Ex link: https://developer.blackboard.com/.well-known/jwks.json
 update the json file with the json file found in blackboard jwks link.
 Ex link: https://developer.blackboard.com/.well-known/jwks.json
 
-### If making a deep linking tool, update 
-##### src -> web -> game.php
-update path in all three li items in is deep launch condition.
-##### src -> web -> configure.php
-update path in set_url function to full path of the folder on bb dev server
-
 ### src -> vendor -> imsglobal -> lti-1p3-tool -> src -> LTI_Message_Launch.php
 comment out the code in the validate_state() function and just return $this
+
+### If making a deep linking tool, update 
+#### src -> web -> game.php
+update path in all three li items in is deep launch condition.
+#### src -> web -> configure.php
+update path in set_url function to full path of the folder on bb dev server
+
+
